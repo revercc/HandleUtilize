@@ -1,0 +1,14 @@
+#pragma once
+#include <ntifs.h>
+
+#define DEVNAME L"\\Device\\AntiProtect"
+#define LNKNAME L"\\??\\AntiProtect"
+#define IOCTL_TEST_DUPHANDLE        CTL_CODE(FILE_DEVICE_UNKNOWN, 0x901, METHOD_OUT_DIRECT, FILE_ANY_ACCESS)
+#define IOCTL_TEST_SKIPCALLBACK     CTL_CODE(FILE_DEVICE_UNKNOWN, 0x902, METHOD_OUT_DIRECT, FILE_ANY_ACCESS)
+#define IOCTL_TEST_KILLPPL          CTL_CODE(FILE_DEVICE_UNKNOWN, 0x903, METHOD_OUT_DIRECT, FILE_ANY_ACCESS)
+
+typedef struct IRPData
+{
+    HANDLE SourceHandle;
+    HANDLE pid;
+}_IRPData, * PIRPData;
