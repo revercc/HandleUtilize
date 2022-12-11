@@ -17,16 +17,20 @@ NTSTATUS DupProcessAccessHandle(IRPData* irp_data, PHANDLE pHandle)
     ObjectAttributes.SecurityDescriptor = 0;
     ObjectAttributes.Length = sizeof(OBJECT_ATTRIBUTES);
     ObjectAttributes.RootDirectory = 0;
-    ObjectAttributes.Attributes = 0;
+    ObjectAttributes.Attributes = OBJ_KERNEL_HANDLE;
     ObjectAttributes.ObjectName = 0;
     HANDLE pProcessHandle = 0;
-    NTSTATUS Status = ZwOpenProcess(&pProcessHandle, PROCESS_DUP_HANDLE, &ObjectAttributes, &ClientId);
+    NTSTATUS Status = ZwOpenProcess(&pProcessHandle, GENERIC_ALL, &ObjectAttributes, &ClientId);
     if (NT_SUCCESS(Status)) {
-        Status = ZwDuplicateObject(pProcessHandle, irp_data->SourceHandle, NtCurrentProcess(), pHandle, 0, FALSE, DUPLICATE_SAME_ACCESS);
-        NtClose(pProcessHandle);
+        if ((ULONGLONG)irp_data->pid > 8) {
+            Status = ZwDuplicateObject(pProcessHandle, irp_data->SourceHandle, NtCurrentProcess(), pHandle, 0, FALSE, DUPLICATE_SAME_ATTRIBUTES | DUPLICATE_SAME_ACCESS);
+        }
+        else {
+            Status = ZwDuplicateObject(pProcessHandle, irp_data->SourceHandle, NtCurrentProcess(), pHandle, 0, FALSE, DUPLICATE_SAME_ATTRIBUTES | DUPLICATE_SAME_ACCESS);
+        }
+        ZwClose(pProcessHandle);
     }
     return Status;
-
 }
 
 //get ObFindHandleForObject proc address
