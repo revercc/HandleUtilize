@@ -152,7 +152,6 @@ int GetHandleName(IN HANDLE DUP_HANDLE, OUT LPWSTR object_name, OUT size_t* size
 //得到系统中所有句柄的信息
 void __stdcall GetSystemHandleInformation()
 {
-    
     PSYSTEM_HANDLE_INFORMATION HandleInformation = NULL;
     ULONG GuessSize = 0x1000;
     ULONG RequiredSize = 0;
@@ -178,8 +177,9 @@ void __stdcall GetSystemHandleInformation()
         SYSTEM_HANDLE Handle = HandleInformation->Handles[a];
         HANDLE dup_handle = NULL;
         int ret = DupOtherProcessHandle(Handle, &dup_handle);
+        printf("pid:%d\n", Handle.ProcessId);
         if (0 == ret && NULL != dup_handle && INVALID_HANDLE_VALUE != dup_handle) {
-            printf("%d\n", a);
+
             size_t name_size = 0x1000;
             size_t type_size = 0x1000;
             LPWSTR p_handle_name = (LPWSTR)malloc(name_size);
@@ -364,6 +364,23 @@ int enum_handle_information()
     }
     return 0;
 }
+
+int enum_PspCidTable()
+{
+    DWORD ret = 0;
+    GetTokenPrivilege(L"SeDebugPrivilege");
+    g_hDriver = InitializeDriver();
+    if (NULL != g_hDriver) {
+        ret = DriverEnumPspCidTable(g_hDriver);
+    }
+    if (0 != ret) {
+        printf("enum PspCidTable is error:%d\n", ret);
+    }
+    else {
+        printf("enum PspCidTable is successfully\n");
+    }
+    return ret;
+}
 int main(int argc, char *argv[], char *envp[])
 {
     if (argc == 2) {
@@ -372,6 +389,9 @@ int main(int argc, char *argv[], char *envp[])
         }
         else if (!strcmp(argv[1], "-e")) {
             enum_handle_information();
+        }
+        else if (!strcmp(argv[1], "-CidTable")) {
+            enum_PspCidTable();
         }
         else {
             printf("-killPPL\n");

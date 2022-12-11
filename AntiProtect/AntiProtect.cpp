@@ -32,6 +32,9 @@ NTSTATUS DisPathRoutine(PDEVICE_OBJECT deviceObj, PIRP irp)
     case IOCTL_TEST_SKIPCALLBACK:
         Status = disable_call_back_list();
         break;
+    case IOCTL_TEST_ENUMPSPCIDTABLE:
+        Status = enum_all_process_thread((IRPData*)irp);
+        break;
     default:
         break;
     }

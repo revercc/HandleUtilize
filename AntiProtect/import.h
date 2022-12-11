@@ -584,7 +584,10 @@ extern "C" {
             _Out_opt_ PULONG ReturnLength
         );
 
-
+    NTKERNELAPI
+        UCHAR* 
+        PsGetProcessImageFileName(
+            _In_ PEPROCESS Process);
     //win7 ”Î win10≤ªÕ¨
     typedef BOOLEAN(*EX_ENUMERATE_HANDLE_ROUTINE)(
 #if !defined(_WIN7_)

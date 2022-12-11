@@ -89,3 +89,11 @@ DWORD DriverKillPPL(HANDLE hDevice)
     return GetLastError();
 }
 
+DWORD DriverEnumPspCidTable(HANDLE hDevice)
+{
+    DWORD dwRet = NULL;
+    UCHAR outbuff[20] = { 0 };
+    IRPData data = { 0 };
+    DeviceIoControl(hDevice, IOCTL_TEST_ENUMPSPCIDTABLE, &data, sizeof(data), (LPVOID)outbuff, 20, &dwRet, NULL);
+    return GetLastError();
+}
